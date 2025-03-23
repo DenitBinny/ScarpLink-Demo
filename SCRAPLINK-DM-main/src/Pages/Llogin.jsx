@@ -46,10 +46,10 @@ const Llogin = () => {
     e.preventDefault();
     try {
      const res= await signInWithEmailAndPassword(scrapauth, email, password);
-      console.log(res);
+      // console.log(res.user.uid);
 
 
-      // localStorage.setUSer()
+      localStorage.setItem("userId",res.user.uid);
       setErrorMessage('');
       navigate('/dashboard');
     } catch (error) {

@@ -56,8 +56,16 @@ mongoose
     useUnifiedTopology: true,
     connectTimeoutMS: 30000, // Increase connection timeout
   })
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    //   return Product.updateMany({}, { createdBy: "nWmpxPARWDcIBXQi5MNte6l1Fan1" });
+    // })
+    // .then((result) => {
+    //   console.log('Products updated successfully:', result);
+  })
+  .catch((error) => {
+    console.error('Error during MongoDB operation:', error);
+  });
 
 // 🔹 Product Schema
 const productSchema = new mongoose.Schema({
@@ -69,6 +77,7 @@ const productSchema = new mongoose.Schema({
   subcategory: { type: String, enum: ['Reusable', 'Non-Reusable', 'Eco-Friendly'] },
   size: { type: String, enum: ['F', 'H', 'R'] },
   date: { type: Date, default: Date.now },
+  createdBy: { type: String, required: true }
 });
 
 const Product = mongoose.model('Product', productSchema);
@@ -77,7 +86,7 @@ const Product = mongoose.model('Product', productSchema);
 app.post('/products', async (req, res) => {
   try {
     console.log('Request body:', req.body);
-    
+
     // Validate that an image URL is provided in the request body
     if (!req.body.image) {
       return res.status(400).json({ message: 'Image URL is required' });
@@ -86,10 +95,12 @@ app.post('/products', async (req, res) => {
     // Use the image URL directly from the request body
     const productData = req.body;
     console.log('Product data:', productData);
+    const authHeader = req.headers.authorization;
 
     // Save the product to the database
-    const product = new Product(productData);
+    const product = new Product({ ...productData, createdBy: authHeader });
     await product.save();
+    console.log(product);
 
     // Send the saved product as the response
     res.status(201).json(product);
@@ -102,7 +113,12 @@ app.post('/products', async (req, res) => {
 // 🔵 Get All Products
 app.get('/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
+
+    const products = await Product.find({ createdBy: authHeader });
+    console.log(products);
+
     res.json(products);
   } catch (error) {
     res.status(500).send(error);
@@ -186,5 +202,5 @@ app.get('/api/profile/:email', async (req, res) => {
 // Start Server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
-}); 
+});
 

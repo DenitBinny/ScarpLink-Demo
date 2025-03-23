@@ -5,12 +5,12 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { scrapauth } from './firebase';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend } from 'chart.js';
-import { 
-  LayoutGrid, 
-  BarChart3, 
-  Filter, 
-  Mail, 
-  Package, 
+import {
+  LayoutGrid,
+  BarChart3,
+  Filter,
+  Mail,
+  Package,
   ClipboardList,
   Users,
   Settings,
@@ -43,7 +43,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/products');
+        const response = await axios.get('http://localhost:5000/products', { headers: { authorization: localStorage.getItem('userId') } });
         const updatedProducts = response.data.map(product => ({
           ...product,
           image: [product.image] // Wrap the image in an array
@@ -119,7 +119,7 @@ function Dashboard() {
         image: imageUrl,
       };
 
-      const productResponse = await axios.post("http://localhost:5000/products", productPayload);
+      const productResponse = await axios.post("http://localhost:5000/products", productPayload, { headers: { authorization: localStorage.getItem('userId') } });
       console.log("Product added successfully:", productResponse.data);
 
       setProductData({
@@ -161,9 +161,9 @@ function Dashboard() {
         return (
           <div className="p-6 bg-gray-100 rounded-lg shadow-md">
             <div className="flex items-center gap-4">
-              <img 
-                src="https://via.placeholder.com/50" 
-                alt="Cymil" 
+              <img
+                src="https://via.placeholder.com/50"
+                alt="Cymil"
                 className="w-12 h-12 rounded-full"
               />
               <div>
@@ -178,9 +178,9 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
               <div key={product._id} className="border rounded-lg p-4 shadow-sm bg-white">
-                <img 
-                  src={Array.isArray(product.image) ? product.image[0] : product.image} 
-                  alt={product.name} 
+                <img
+                  src={Array.isArray(product.image) ? product.image[0] : product.image}
+                  alt={product.name}
                   className="w-full h-48 object-cover mb-2 rounded"
                 />
                 <h3 className="text-lg font-semibold">{product.name}</h3>
@@ -198,9 +198,9 @@ function Dashboard() {
             <ul className="space-y-4">
               {['Denit D Binny', 'Blessy Mariam', 'Geo George', 'Cymil Sara'].map((dealer, index) => (
                 <li key={index} className="flex items-center gap-4">
-                  <img 
-                    src={`https://via.placeholder.com/50?text=${dealer.split(' ')[0]}`} 
-                    alt={dealer} 
+                  <img
+                    src={`https://via.placeholder.com/50?text=${dealer.split(' ')[0]}`}
+                    alt={dealer}
                     className="w-12 h-12 rounded-full"
                   />
                   <span className="text-lg font-medium">{dealer}</span>
@@ -248,9 +248,9 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
               <div key={product._id} className="border rounded-lg p-4 shadow-sm bg-white">
-                <img 
-                  src={Array.isArray(product.image) ? product.image[0] : product.image} 
-                  alt={product.name} 
+                <img
+                  src={Array.isArray(product.image) ? product.image[0] : product.image}
+                  alt={product.name}
                   className="w-full h-48 object-cover mb-2 rounded"
                 />
                 <h3 className="text-lg font-semibold">{product.name}</h3>
@@ -304,7 +304,7 @@ function Dashboard() {
             </div>
             <nav className="space-y-2">
               <div className="mb-4">
-                <div 
+                <div
                   className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                   onClick={() => setActiveTab('dashboard')}
                 >
@@ -312,14 +312,14 @@ function Dashboard() {
                   <span>Dashboard</span>
                 </div>
                 <div className="ml-4 space-y-1">
-                  <div 
+                  <div
                     className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                     onClick={() => setActiveTab('summary')}
                   >
                     <BarChart3 size={20} />
                     <span>Summary</span>
                   </div>
-                  <div 
+                  <div
                     className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                     onClick={() => setActiveTab('custom')}
                   >
@@ -328,7 +328,7 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                 onClick={() => setActiveTab('messages')}
               >
@@ -336,28 +336,28 @@ function Dashboard() {
                 <span>Messages</span>
                 <span className="ml-auto bg-gray-700 px-2 rounded-full text-sm">2</span>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                 onClick={() => setShowProductForm(true)}
               >
-                <Package size={20}/>
+                <Package size={20} />
                 <span>Products</span>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                 onClick={() => setActiveTab('orders')}
               >
                 <ClipboardList size={20} />
                 <span>Orders</span>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                 onClick={() => setActiveTab('dealers')}
               >
                 <Users size={20} />
                 <span>Dealers</span>
               </div>
-              <div 
+              <div
                 className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
                 onClick={() => setActiveTab('settings')}
               >
@@ -371,7 +371,7 @@ function Dashboard() {
               <HelpCircle size={20} />
               <span>Help</span>
             </div>
-            <div 
+            <div
               className="flex items-center gap-2 p-2 rounded hover:bg-gray-800 cursor-pointer"
               onClick={handleLogout}
             >
@@ -391,7 +391,7 @@ function Dashboard() {
       {showProductForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-8 w-full max-w-lg relative overflow-y-auto max-h-[80vh]">
-            <button 
+            <button
               onClick={() => setShowProductForm(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
             >
